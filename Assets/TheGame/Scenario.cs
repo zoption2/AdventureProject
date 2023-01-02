@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace TheGame.Gameplay
+namespace TheGame
 {
     public abstract class Scenario
     {
