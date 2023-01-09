@@ -5,7 +5,13 @@ EditorBuildSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_Scenes:
+  - enabled: 0
+    path: 
+    guid: 00000000000000000000000000000000
   - enabled: 1
-    path: Assets/Scenes/SampleScene.unity
-    guid: 8c9cfa26abfee488c85f1582747f6a02
+    path: Assets/TheGame/Scenes/LobbyTestFly.unity
+    guid: d8b4426f13b2cdd428787ef5851bab7c
+  - enabled: 1
+    path: Assets/TheGame/Scenes/TestFly.unity
+    guid: 8d55abb0d9b45f74f9b428d021e960fe
   m_configObjects: {}

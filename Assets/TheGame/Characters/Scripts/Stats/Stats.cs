@@ -2,6 +2,7 @@
 {
     public interface IStatsGetter
     {
+        float TotalPower { get; }
         float SpeedValue { get; }
     }
 
@@ -13,6 +14,7 @@
         public Stat Speed;
 
         public float SpeedValue => Speed.Value;
+        public float TotalPower => Power.Value; 
     }
 }
 

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
 using System;
+using Mirror;
 
 
 namespace TheGame
@@ -22,28 +23,62 @@ namespace TheGame
         Turn,
         Dead
     }
-
-    public class Matchmaker
-    {
-        private IRoundService _roundService;
-        public void StartMatch()
-        {
-            //_roundService.CreateRound();
-        }
-    }
-
    
-    public interface IRoundService
-    {
-        Round CreateRound();
-    }
 
-    public class Round
+    [Serializable]
+    public class Match
     {
+        private int _maxPlayers;
+        private string _id = "";
         private List<IPlayerMediator> _players = new();
         private Queue<IPlayerMediator> _roundQueue = new();
 
-        private void PrepareQueue()
+        public string ID => _id;
+        public int MaxPlayers => _maxPlayers;
+        public int PlayersCount => _players.Count;
+        public bool IsRoundHasPlayers => _roundQueue.Count > 0;
+
+        public Match()
+        {
+
+        }
+
+        public Match (string id)
+        {
+            _id = id;
+        }
+
+        public float GetMiddlePower()
+        {
+            if (PlayersCount == 0)
+            {
+                return -1;
+            }
+
+            float totalPower= 0;
+            for (int i = 0, j = _players.Count; i < j; i++)
+            {
+                totalPower += _players[i].Model.StatsGetter.TotalPower;
+            }
+            var result = totalPower / PlayersCount;
+
+            return result;
+        }
+
+        public void AddPlayer(IPlayerMediator player)
+        {
+            if (!_players.Contains(player))
+            {
+                _players.Add(player);
+            }
+        }
+
+        public IPlayerMediator GetPlayerFromQueue()
+        {
+            return _roundQueue.Dequeue();
+        }
+
+        public void PrepareQueue()
         {
             var playersCount = _players.Count;
             var sortedBySpeed = _players.OrderByDescending(x => x.Model.StatsGetter.SpeedValue).ToArray();
@@ -56,4 +91,6 @@ namespace TheGame
 
     }
 }
+    
+
 
