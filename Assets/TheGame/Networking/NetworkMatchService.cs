@@ -97,10 +97,7 @@ namespace TheGame
             {
                 if (TryFindMatchInPowerRange(playerMediator.Model.StatsGetter.TotalPower, kLowLevelRange, out Match match))
                 {
-                    if (completionSource.TrySetResult(match))
-                    {
-                        return completionSource.Task;
-                    }
+   
                 }
             }
 
@@ -115,7 +112,8 @@ namespace TheGame
                 }
             }
 
-            public async UniTask<Match> FindMatch(IPlayerMediator playerMediator)
+            /*
+            public async UniTask<Match> FindMatchAsync(IPlayerMediator playerMediator)
             {
                 UniTaskCompletionSource<Match> completionSource = new();
 
@@ -123,7 +121,7 @@ namespace TheGame
                 {
                     if (completionSource.TrySetResult(match))
                     {
-                        return completionSource.Task;
+                        
                     }
                 }
                 else
@@ -135,6 +133,7 @@ namespace TheGame
                 }
                 await UniTask.WaitUntil(() => _networkManager.IsHostStarted == true);
             }
+            */
 
             public void EndMatch(string id)
             {
@@ -196,6 +195,7 @@ namespace TheGame
                 //SetNetworkAddress();
             }
 
+            /*
             public void FindGame(IPlayerMediator player)
             {
                 Match match;
@@ -203,9 +203,9 @@ namespace TheGame
                 if (_networkMatches.Count > 0)
                 {
                     JoinGame();
-                    match = GetMatch("000");
-                    match.AddPlayer(player);
-                    _networkManager.OnSceneChanged += SetMatch;
+                    //match = GetMatch("000");
+                    //match.AddPlayer(player);
+                    //_networkManager.OnSceneChanged += SetMatch;
 
                 }
                 else
@@ -234,6 +234,7 @@ namespace TheGame
 
 
             }
+            */
 
             private void OnHostStarted()
             {

@@ -1,7 +1,5 @@
-using System;
 using System.Collections;
 using System.Collections.Generic;
-using UnityEngine;
 
 namespace TheGame
 {
@@ -10,10 +8,8 @@ namespace TheGame
 		PlayerModel Model { get; }
 		void Init();
 		void SetView(IPlayerView view);
-		void StartTurn(System.Action onComplete);
     }
 
-    [Serializable]
 	public class PlayerMediator : IPlayerMediator
 	{
 		private PlayerModel _model;
@@ -31,20 +27,21 @@ namespace TheGame
 			_view = view;
 		}
 
-        public void StartTurn(Action onComplete)
-        {
-            throw new NotImplementedException();
-        }
-    }
+		public void SetModel(PlayerModel model)
+		{
+			_model = model;
+			OnModelSet();
+		}
+
+		private void OnModelSet()
+		{
+
+		}
+	}
 
 	public class PlayerModel
 	{
 		public IStatsGetter StatsGetter { get; }
-	}
-
-	public interface IPlayerView
-	{
-
 	}
 }
 
