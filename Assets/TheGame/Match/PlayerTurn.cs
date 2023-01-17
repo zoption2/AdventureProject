@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 
 
 namespace TheGame
@@ -13,10 +14,10 @@ namespace TheGame
     {
         private int _moves;
         private int _actions;
-        private PlayerMediator _mediator;
+        private PlayerController _mediator;
         private List<Actions> _availableActions;
 
-        public PlayerTurn(PlayerMediator mediator, List<Actions> actions)
+        public PlayerTurn(PlayerController mediator, List<Actions> actions)
         {
             _mediator = mediator;
             _availableActions = actions;

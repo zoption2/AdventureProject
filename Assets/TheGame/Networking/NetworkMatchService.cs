@@ -7,14 +7,14 @@ using Cysharp.Threading.Tasks;
 
 namespace TheGame
 {
-    public interface IMatchService
+    public interface INetworkMatchService
     {
         Match GetMatch(string id);
         void FindMatch();
         void EndMatch(string id);
     }
 
-    public class NetworkMatchService : NetworkBehaviour, IMatchService
+    public class NetworkMatchService : NetworkBehaviour, INetworkMatchService
     {
         [SerializeField] private CustomNetworkManager _networkManager;
         [SerializeField] private string _playSceneName ="";
@@ -93,7 +93,7 @@ namespace TheGame
             }
 
             [Command]
-            public void FindMatch(IPlayerMediator playerMediator)
+            public void FindMatch(IPlayerController playerMediator)
             {
                 if (TryFindMatchInPowerRange(playerMediator.Model.StatsGetter.TotalPower, kLowLevelRange, out Match match))
                 {

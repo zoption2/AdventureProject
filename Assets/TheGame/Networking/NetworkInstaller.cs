@@ -16,8 +16,8 @@ namespace TheGame
 
         private void BindServices()
         {
-            Container.Bind<IMatchService>().To<NetworkMatchService>().FromInstance(_matchService).AsSingle();
-            Container.Bind<ICachedPlayer>().To<CachedPlayer>().AsSingle();
+            Container.Bind<INetworkMatchService>().To<NetworkMatchService>().FromInstance(_matchService).AsSingle();
+            
             Container.Bind<CustomNetworkManager>().To<CustomNetworkManager>().FromInstance(_networkManager).AsSingle();
         }
     }

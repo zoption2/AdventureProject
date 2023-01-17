@@ -16,7 +16,7 @@ namespace TheGame
         [SerializeField] private Button _getEnemyButton;
         [SerializeField] private Button _endTurnButton;
 
-        private IPlayerMediator _mediator;
+        private IPlayerController _mediator;
 
         private void OnEnable()
         {

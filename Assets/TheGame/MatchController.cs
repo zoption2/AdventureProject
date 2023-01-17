@@ -17,7 +17,7 @@ namespace TheGame
             if (_match.IsRoundHasPlayers)
             {
                 var player = _match.GetPlayerFromQueue();
-                player.StartTurn(StartMatch);
+                //player.StartTurn(StartMatch);
             }
             else
             {
@@ -30,6 +30,17 @@ namespace TheGame
             _match.PrepareQueue();
             StartMatch();
         }
+    }
+
+    public interface IMatchObserver
+    {
+        void Notify();
+    }
+
+    public interface IObservableMatch
+    {
+        void AddObserver(IMatchObserver observer);
+        void RemoveObserver(IMatchObserver observer);
     }
 }
     
