@@ -307,12 +307,6 @@ namespace TheGame
         public float CritDamage;
     }
 
-    public interface IDataService
-    {
-        IDataGetter Getter { get; }
-        IDataSetter Setter { get; }
-    }
-
     public interface IDataGetter
     {
         CharacterInstanceData GetCharacterInstanceData(string id);
@@ -321,76 +315,6 @@ namespace TheGame
     public interface IDataSetter
     {
 
-    }
-
-    public class DataService : IDataService
-    {
-        private const int kIdLength = 7;
-        public IDataGetter Getter { get; }
-        public IDataSetter Setter { get; }
-        private CharacterDataProvider Character { get; } = new();
-
-        public DataService()
-        {
-            Getter = new DataGetter(this);
-            Setter = new DataSetter(this);
-        }
-
-        private string CreateCharacterUniqID()
-        {
-            return DataUtils.GetUniqueKey(kIdLength);
-        }
-
-        private partial class DataGetter : IDataGetter
-        {
-            private DataService _service;
-
-            public DataGetter(DataService service)
-            {
-                _service = service;
-            }
-
-            public CharacterInstanceData GetCharacterInstanceData(string id)
-            {
-                CharacterInstanceData data = default;
-                try
-                {
-                    data = _service.Character.InstanceData.Get(id);
-                }
-                catch (Exception ex)
-                {
-                    
-                }
-
-                return data;
-            }
-
-            public CharacterInstanceData GetNewCharacterInstanceData(Character character)
-            {
-                var baseData = _service.Character.BaseData.Get(character);
-                var instanceData = BuildNewCharacterInstanceDataFromBase(baseData);
-                return instanceData;
-            }
-
-            private CharacterInstanceData BuildNewCharacterInstanceDataFromBase(CharacterBaseData baseData)
-            {
-                var instanceData = new CharacterInstanceData();
-                instanceData.SetBaseData(baseData);
-                instanceData.ID = _service.CreateCharacterUniqID();
-                instanceData.Name = "Noname";
-                return instanceData;
-            }
-        }
-
-        private partial class DataSetter : IDataSetter
-        {
-            private DataService _service;
-
-            public DataSetter(DataService service)
-            {
-                _service = service;
-            }
-        }
     }
 }
     
