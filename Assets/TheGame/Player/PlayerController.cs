@@ -64,6 +64,11 @@ namespace TheGame
 		{
 			_character = character;
 		}
+
+		public void SetStats(Stats stats)
+		{
+			_stats = stats;
+		}
 	}
 }
 

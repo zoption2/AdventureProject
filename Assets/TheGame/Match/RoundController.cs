@@ -58,7 +58,7 @@ namespace TheGame
             float totalPower= 0;
             for (int i = 0, j = _players.Count; i < j; i++)
             {
-                totalPower += _players[i].Model.StatsGetter.TotalPower;
+                totalPower += _players[i].Model.StatsGetter.Power.Value;
             }
             var result = totalPower / PlayersCount;
 
@@ -81,7 +81,7 @@ namespace TheGame
         public void PrepareQueue()
         {
             var playersCount = _players.Count;
-            var sortedBySpeed = _players.OrderByDescending(x => x.Model.StatsGetter.SpeedValue).ToArray();
+            var sortedBySpeed = _players.OrderByDescending(x => x.Model.StatsGetter.Speed.Value).ToArray();
 
             for (int i = 0, j = sortedBySpeed.Length; i < j; i++)
             {
@@ -93,8 +93,21 @@ namespace TheGame
 
     public enum Team
     {
-        Player,
-        Enemy
+        First,
+        Second
+    }
+
+    public enum PlayerType
+    {
+        Human,
+        AI
+    }
+
+    public struct PlayerInfo
+    {
+        public PlayerType PlayerType;
+        //public List<Booster> Boosters;
+        public CharacterInstanceData CharacterData;
     }
 
     [Serializable]
@@ -133,7 +146,6 @@ namespace TheGame
     public class MatchService : IMatchService
     {
         private const int kIdLength = 7;
-        private const float kLowLevelRange = 0.5f;
 
         private Match _match;
         private IPlayerFactory _playerFactory;
@@ -180,9 +192,204 @@ namespace TheGame
 
     public class PlayerFactory : IPlayerFactory
     {
+        private CharacterProvider _characterProvider;
+        private IPlayerService _playerService;
+
+        public PlayerFactory(CharacterProvider characterProvider
+            , IPlayerService playerService)
+        {
+            _characterProvider = characterProvider;
+            _playerService = playerService;
+        }
+
         public IPlayerController GetPlayer(IPlayerInfo playerInfo)
         {
-            throw new System.NotImplementedException();
+            var playerController = new PlayerController(_characterProvider);
+            var playerModel = new PlayerModel()
+        }
+    }
+
+    public interface IPlayerService
+    {
+        IPlayerModel GetModel(int id);
+        //IPlayerInfo CreateNewCharacter();
+    }
+
+    public class PlayerService: IPlayerService
+    {
+        private DataProvider _dataProvider;
+        public IPlayerModel GetModel(int id)
+        {
+            var model = new PlayerModel();
+        }
+    }
+
+    public class CharacterInstanceDataProvider
+    {
+        private Dictionary<string, CharacterInstanceData> _charactersData = new();
+
+        public void AddCharacterStatsData(CharacterInstanceData data)
+        {
+            if (!_charactersData.ContainsKey(data.ID))
+            {
+                _charactersData.Add(data.ID, data);
+            }
+        }
+
+        public CharacterInstanceData Get(string id)
+        {
+            if (_charactersData.ContainsKey(id))
+            {
+                return _charactersData[id];
+            }
+            else throw new System.ArgumentNullException(
+                string.Format("There is no instance finded with ID {0}", id));
+        }
+    }
+
+    public class CharacterDataProvider
+    {
+        public CharacterInstanceDataProvider InstanceData { get; } = new();
+        public CharacterBaseDataProvider BaseData { get; } = new();
+    }
+
+    public class CharacterBaseDataProvider
+    {
+        private Dictionary<Character, CharacterBaseData> _charactersData = new();
+
+        public void AddStatsData(CharacterBaseData data)
+        {
+            if (!_charactersData.ContainsKey(data.Character))
+            {
+                _charactersData.Add(data.Character, data);
+            }
+        }
+
+        public CharacterBaseData Get(Character character)
+        {
+            if (_charactersData.ContainsKey(character))
+            {
+                return _charactersData[character];
+            }
+            else throw new System.ArgumentNullException(
+                string.Format("There is no base data exist for character {0}", character));
+        }
+    }
+
+    [Serializable]
+    public struct CharacterInstanceData
+    {
+        public string ID;
+        public string Name;
+        public Character Character;
+        public float Power;
+        public float Speed;
+        public float CritRate;
+        public float CritDamage;
+
+        public void SetBaseData(CharacterBaseData baseData)
+        {
+            Character = baseData.Character;
+            Power = baseData.Power;
+            Speed = baseData.Speed;
+            CritDamage = baseData.CritDamage;
+            CritRate = baseData.CritRate;
+        }
+    }
+
+    [Serializable]
+    public struct CharacterBaseData
+    {
+        public Character Character;
+        public float Power;
+        public float Speed;
+        public float CritRate;
+        public float CritDamage;
+    }
+
+    public interface IDataService
+    {
+        IDataGetter Getter { get; }
+        IDataSetter Setter { get; }
+    }
+
+    public interface IDataGetter
+    {
+        CharacterInstanceData GetCharacterInstanceData(string id);
+    }
+
+    public interface IDataSetter
+    {
+
+    }
+
+    public class DataService : IDataService
+    {
+        private const int kIdLength = 7;
+        public IDataGetter Getter { get; }
+        public IDataSetter Setter { get; }
+        private CharacterDataProvider Character { get; } = new();
+
+        public DataService()
+        {
+            Getter = new DataGetter(this);
+            Setter = new DataSetter(this);
+        }
+
+        private string CreateCharacterUniqID()
+        {
+            return DataUtils.GetUniqueKey(kIdLength);
+        }
+
+        private partial class DataGetter : IDataGetter
+        {
+            private DataService _service;
+
+            public DataGetter(DataService service)
+            {
+                _service = service;
+            }
+
+            public CharacterInstanceData GetCharacterInstanceData(string id)
+            {
+                CharacterInstanceData data = default;
+                try
+                {
+                    data = _service.Character.InstanceData.Get(id);
+                }
+                catch (Exception ex)
+                {
+                    
+                }
+
+                return data;
+            }
+
+            public CharacterInstanceData GetNewCharacterInstanceData(Character character)
+            {
+                var baseData = _service.Character.BaseData.Get(character);
+                var instanceData = BuildNewCharacterInstanceDataFromBase(baseData);
+                return instanceData;
+            }
+
+            private CharacterInstanceData BuildNewCharacterInstanceDataFromBase(CharacterBaseData baseData)
+            {
+                var instanceData = new CharacterInstanceData();
+                instanceData.SetBaseData(baseData);
+                instanceData.ID = _service.CreateCharacterUniqID();
+                instanceData.Name = "Noname";
+                return instanceData;
+            }
+        }
+
+        private partial class DataSetter : IDataSetter
+        {
+            private DataService _service;
+
+            public DataSetter(DataService service)
+            {
+                _service = service;
+            }
         }
     }
 }

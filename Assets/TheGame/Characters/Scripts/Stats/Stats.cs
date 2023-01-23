@@ -2,19 +2,19 @@
 {
     public interface IStatsGetter
     {
-        float TotalPower { get; }
-        float SpeedValue { get; }
+        IStatGetter Power { get; }
+        IStatGetter Speed { get; }
     }
 
     public class Stats : IStatsGetter
     {
-        public Stat Power;
-        public Stat Health;
-        public Stat Mana;
-        public Stat Speed;
+        public Stat PowerStat;
+        public Stat HealthStat;
+        public Stat ManaStat;
+        public Stat SpeedStat;
 
-        public float SpeedValue => Speed.Value;
-        public float TotalPower => Power.Value; 
+        public IStatGetter Power => PowerStat;
+        public IStatGetter Speed => SpeedStat;
     }
 }
 
