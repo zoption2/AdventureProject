@@ -1,10 +1,12 @@
 ﻿using System.Security.Cryptography;
 using System.Text;
+using Newtonsoft.Json;
+using System.IO;
 
 
 namespace TheGame
 {
-    public static class DataUtils
+    public class DataUtils
     {
         public static string GetUniqueKey(int size)
         {
@@ -22,8 +24,41 @@ namespace TheGame
             }
             return result.ToString();
         }
+
+        public static void SaveData<T>(string path, T data)
+        {
+            JsonDataService.SaveData(path, data);
+        }
+
+        public static T LoadData<T>(string path)
+        {
+            return JsonDataService.LoadData<T>(path);
+        }
+    }
+
+    public static class JsonDataService
+    {
+        public static void SaveData<T>(string fileName, T data)
+        {
+            string jsonData = JsonConvert.SerializeObject(data);
+            File.WriteAllText(fileName, jsonData);
+        }
+
+        public static T LoadData<T>(string fileName)
+        {
+            if (File.Exists(fileName))
+            {
+                string jsonData = File.ReadAllText(fileName);
+                return JsonConvert.DeserializeObject<T>(jsonData);
+            }
+            else
+            {
+                return default(T);
+            }
+        }
     }
 }
-    
+
+
 
 

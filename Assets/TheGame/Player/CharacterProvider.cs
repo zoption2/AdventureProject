@@ -6,8 +6,14 @@ using System.Collections.Generic;
 
 namespace TheGame
 {
+    public interface ICharacterProvider
+    {
+        UniTask<GameObject> GetCharacterAsync(Character character);
+        void Release(int instanceID);
+    }
+
     [CreateAssetMenu(fileName = "CharacterProvider", menuName = "ScriptableObjects/CharacterProvider")]
-    public sealed class CharacterProvider : ScriptableObject
+    public sealed class CharacterProvider : ScriptableObject, ICharacterProvider
     {
         [SerializeField] private CharacterAssetData[] _charactersData;
         private Dictionary<int, AsyncOperationHandle<GameObject>> _loadedData = new();
@@ -52,6 +58,19 @@ namespace TheGame
             [field: SerializeField] public Character Character { get; private set; }
             [field: SerializeField] public AssetReferenceGameObject PrefabRef { get; private set; }
         }
+    }
+
+    public interface IPrefabsProvider
+    {
+        ICharacterProvider CharacterProvider { get; }
+    }
+
+    [CreateAssetMenu(fileName = "PrefabsProvider", menuName = "ScriptableObjets/PrefabsProvider")]
+    public class PrefabsProvider : ScriptableObject, IPrefabsProvider
+    {
+        [SerializeField] private CharacterProvider _characterProvider;
+
+        public ICharacterProvider CharacterProvider => _characterProvider;
     }
 }
 

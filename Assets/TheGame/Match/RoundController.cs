@@ -4,6 +4,7 @@ using UnityEngine;
 using System.Linq;
 using System;
 using Mirror;
+using TheGame.Data;
 
 
 namespace TheGame
@@ -107,7 +108,7 @@ namespace TheGame
     {
         public PlayerType PlayerType;
         //public List<Booster> Boosters;
-        public CharacterInstanceData CharacterData;
+        public CharacterData CharacterData;
     }
 
     [Serializable]
@@ -217,7 +218,8 @@ namespace TheGame
 
     public class PlayerService: IPlayerService
     {
-        private DataProvider _dataProvider;
+        private IDataService _dataService;
+
         public IPlayerModel GetModel(int id)
         {
             var model = new PlayerModel();
@@ -226,9 +228,9 @@ namespace TheGame
 
     public class CharacterInstanceDataProvider
     {
-        private Dictionary<string, CharacterInstanceData> _charactersData = new();
+        private Dictionary<string, CharacterData> _charactersData = new();
 
-        public void AddCharacterStatsData(CharacterInstanceData data)
+        public void AddCharacterStatsData(CharacterData data)
         {
             if (!_charactersData.ContainsKey(data.ID))
             {
@@ -236,7 +238,7 @@ namespace TheGame
             }
         }
 
-        public CharacterInstanceData Get(string id)
+        public ICharacterData Get(string id)
         {
             if (_charactersData.ContainsKey(id))
             {
@@ -276,46 +278,93 @@ namespace TheGame
         }
     }
 
-    [Serializable]
-    public struct CharacterInstanceData
+    public interface ICharacterData
     {
-        public string ID;
-        public string Name;
-        public Character Character;
-        public float Power;
-        public float Speed;
-        public float CritRate;
-        public float CritDamage;
+        string Name { get; }
+        bool CompareID(string id);
+        string GetID(object requester);
+    }
 
-        public void SetBaseData(CharacterBaseData baseData)
+    [Serializable]
+    public class CharacterData : ICharacterData
+    {
+        private readonly string _id;
+        private readonly CharacterBaseData _base;
+        private string _name;
+
+        public string ID => _id;
+        public string Name => _name;
+        public CharacterBaseData Base => _base;
+
+
+        public int TotalSkillPoints;
+        public int AvailableSkillPoints;
+
+        public CharacterData(string id, CharacterBaseData baseData)
         {
-            Character = baseData.Character;
-            Power = baseData.Power;
-            Speed = baseData.Speed;
-            CritDamage = baseData.CritDamage;
-            CritRate = baseData.CritRate;
+            _id = id;
+        }
+
+        public bool CompareID(string id)
+        {
+            return _id == id;
+        }
+
+        public string GetID(object requester)
+        {
+            //observe requester
+            return _id;
+        }
+
+        [Serializable]
+        private class StatStorage
+        {
+            public StatType Stat;
+            public float TotalValue;
         }
     }
+
+    public struct StatChanger
+    {
+        public TripleKey ChangerKey;
+        public float Value;
+        public Type ChangeType;
+
+        public enum Type
+        {
+            Absolute,
+            Relative
+        }
+    }
+
+    
+
 
     [Serializable]
     public struct CharacterBaseData
     {
         public Character Character;
         public float Power;
+        public float Attack;
+        public float Defence;
+        public float Health;
+        public float Mana;
         public float Speed;
         public float CritRate;
         public float CritDamage;
     }
 
-    public interface IDataGetter
+    public enum StatType
     {
-        CharacterInstanceData GetCharacterInstanceData(string id);
+        Attack,
+        Defence,
+        Health,
+        Mana,
+        Speed,
+        CritRate,
+        CritDamage
     }
 
-    public interface IDataSetter
-    {
-
-    }
 }
     
 

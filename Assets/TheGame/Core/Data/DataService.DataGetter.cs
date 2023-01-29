@@ -1,8 +1,13 @@
 ﻿using System;
 
 
-namespace TheGame
+namespace TheGame.Data
 {
+
+    public interface IDataGetter
+    {
+        CharacterData GetCharacterInstanceData(string id);
+    }
 
     public partial class DataService
     {
@@ -15,9 +20,9 @@ namespace TheGame
                 _service = service;
             }
 
-            public CharacterInstanceData GetCharacterInstanceData(string id)
+            public CharacterData GetCharacterInstanceData(string id)
             {
-                CharacterInstanceData data = default;
+                CharacterData data = default;
                 try
                 {
                     data = _service.Character.InstanceData.Get(id);
@@ -30,14 +35,14 @@ namespace TheGame
                 return data;
             }
 
-            public CharacterInstanceData GetNewCharacterInstanceData(Character character)
+            public CharacterData GetNewCharacterInstanceData(Character character)
             {
                 var baseData = _service.Character.BaseData.Get(character);
                 var instanceData = BuildNewCharacterInstanceDataFromBase(baseData);
                 return instanceData;
             }
 
-            private CharacterInstanceData BuildNewCharacterInstanceDataFromBase(CharacterBaseData baseData)
+            private CharacterData BuildNewCharacterInstanceDataFromBase(CharacterBaseData baseData)
             {
                 var instanceData = new CharacterInstanceData();
                 instanceData.SetBaseData(baseData);

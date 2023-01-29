@@ -1,4 +1,4 @@
-﻿namespace TheGame
+﻿namespace TheGame.Data
 {
     public interface IDataService
     {
@@ -22,16 +22,6 @@
         private string CreateCharacterUniqID()
         {
             return DataUtils.GetUniqueKey(kIdLength);
-        }
-
-        private partial class DataSetter : IDataSetter
-        {
-            private DataService _service;
-
-            public DataSetter(DataService service)
-            {
-                _service = service;
-            }
         }
     }
 }
