@@ -1,4 +1,6 @@
-﻿namespace TheGame.Data
+﻿using TheGame.Utils;
+
+namespace TheGame.Data
 {
     public interface IDataService
     {

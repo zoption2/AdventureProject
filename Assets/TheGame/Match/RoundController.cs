@@ -259,7 +259,7 @@ namespace TheGame
     {
         private Dictionary<Character, CharacterBaseData> _charactersData = new();
 
-        public void AddStatsData(CharacterBaseData data)
+        public void AddBaseData(CharacterBaseData data)
         {
             if (!_charactersData.ContainsKey(data.Character))
             {
@@ -281,8 +281,7 @@ namespace TheGame
     public interface ICharacterData
     {
         string Name { get; }
-        bool CompareID(string id);
-        string GetID(object requester);
+        string ID { get; }
     }
 
     [Serializable]
@@ -290,12 +289,12 @@ namespace TheGame
     {
         private readonly string _id;
         private readonly CharacterBaseData _base;
-        private string _name;
+        private string _name = "Noname";
+        private Dictionary<StatType, DataStat> _statsData = new();
 
         public string ID => _id;
         public string Name => _name;
         public CharacterBaseData Base => _base;
-
 
         public int TotalSkillPoints;
         public int AvailableSkillPoints;
@@ -303,6 +302,25 @@ namespace TheGame
         public CharacterData(string id, CharacterBaseData baseData)
         {
             _id = id;
+            _base = baseData;
+        }
+
+        public float GetStatValue(StatType stat)
+        {
+            if (!_statsData.ContainsKey(stat))
+            {
+                
+            }
+            return _statsData[stat].TotalValue;
+        }
+
+        public void AddStatModifier(DataStatModifier modifier)
+        {
+            var stat = modifier.Stat;
+            if (_statsData.ContainsKey(stat))
+            {
+                _statsData[stat].AddModifier(modifier);
+            }
         }
 
         public bool CompareID(string id)
@@ -316,28 +334,108 @@ namespace TheGame
             return _id;
         }
 
-        [Serializable]
-        private class StatStorage
+        private void AddBaseStatData(StatType stat)
         {
-            public StatType Stat;
-            public float TotalValue;
+
+        }
+
+        [Serializable]
+        private class DataStat
+        {
+            private StatType _stat;
+            private float _baseValue;
+            private float _totalValue;
+            private Dictionary<TripleKey, DataStatModifier> _modifiers = new();
+
+            public StatType Stat => _stat;
+            public float TotalValue => _totalValue;
+
+            public DataStat(StatType stat, float baseValue)
+            {
+                _stat = stat;
+                _baseValue = baseValue;
+            }
+
+            public void AddModifier(DataStatModifier modifier)
+            {
+                var key = modifier.Key;
+                if (!_modifiers.ContainsKey(key))
+                {
+                    _modifiers.Add(key, modifier);
+                }
+                _modifiers[key].UpdateValue(modifier.Value);
+                UpdateTotalValue();
+            }
+
+            public void RemoveModifier(TripleKey key)
+            {
+                if (_modifiers.ContainsKey(key))
+                {
+                    _modifiers.Remove(key);
+                }
+                UpdateTotalValue();
+            }
+
+            public void UpdateBaseValue(float newValue)
+            {
+                _baseValue = newValue;
+                UpdateTotalValue();
+            }
+
+            private void UpdateTotalValue()
+            {
+                var absolutValue = _baseValue;
+                var relativeValue = 0f;
+                foreach (var modifier in _modifiers.Values)
+                {
+                    switch (modifier.ChangeType)
+                    {
+                        case DataStatModifier.Type.Absolute:
+                            absolutValue += modifier.Value;
+                            break;
+                        case DataStatModifier.Type.Relative:
+                            relativeValue += modifier.Value;
+                            break;
+                        default:
+                            break;
+                    }
+                }
+                _totalValue = absolutValue + absolutValue * relativeValue;
+            }
         }
     }
 
-    public struct StatChanger
+    public class DataStatModifier
     {
-        public TripleKey ChangerKey;
-        public float Value;
-        public Type ChangeType;
+        private StatType _stat;
+        private TripleKey _changerKey;
+        private float _value;
+        private Type _changeType;
+
+        public StatType Stat => _stat;
+        public TripleKey Key => _changerKey;
+        public float Value => _value;
+        public Type ChangeType => _changeType;
+
+        public DataStatModifier(StatType stat, float value, Type type, TripleKey key)
+        {
+            _stat = stat;
+            _value = value;
+            _changeType = type;
+            _changerKey = key;
+        }
+
+        public void UpdateValue(float newValue)
+        {
+            _value = newValue;
+        }
 
         public enum Type
         {
             Absolute,
             Relative
         }
-    }
-
-    
+    }    
 
 
     [Serializable]
@@ -365,6 +463,8 @@ namespace TheGame
         CritDamage
     }
 
+
+    [CreateAssetMenu(fileName = "NewCharacterData")]
 }
     
 

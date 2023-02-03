@@ -2,9 +2,11 @@
 using System.Text;
 using Newtonsoft.Json;
 using System.IO;
+using Cysharp.Threading.Tasks;
+using GPrefsUtility;
 
 
-namespace TheGame
+namespace TheGame.Utils
 {
     public class DataUtils
     {
@@ -44,6 +46,7 @@ namespace TheGame
             File.WriteAllText(fileName, jsonData);
         }
 
+
         public static T LoadData<T>(string fileName)
         {
             if (File.Exists(fileName))
@@ -56,8 +59,62 @@ namespace TheGame
                 return default(T);
             }
         }
+
+        public static async UniTask<string> ConvertToStringAsync(object obj)
+        {
+            return await UniTask.FromResult(JsonConvert.SerializeObject(obj));
+        }
+
+        public static async UniTask<T> ConvertFromStringAsync<T>(string jsonString)
+        {
+            return await UniTask.FromResult(JsonConvert.DeserializeObject<T>(jsonString));
+        }
+    }
+
+    public class GPrefsUtils
+    {
+        public static void SetInt(string key, int value)
+        {
+            GPrefs.SetInt(key, value);
+        }
+
+        public static int GetInt(string key)
+        {
+            return GPrefs.GetInt(key);
+        }
+
+        public static void SetFloat(string key, float value)
+        {
+            GPrefs.SetFloat(key, value);
+        }
+
+        public static float GetFloat(string key)
+        {
+            return GPrefs.GetFloat(key);
+        }
+
+        public static void SetString(string key, string value)
+        {
+            GPrefs.SetString(key, value);
+        }
+
+        public static string GetString(string key)
+        {
+            return GPrefs.GetString(key);
+        }
+
+        public static void Save()
+        {
+            GPrefs.Save();
+        }
+
+        public static void LoadFile(SimpleJSON.JSONNode data)
+        {
+            GPrefs.LoadExternal(data);
+        }
     }
 }
+
 
 
 
