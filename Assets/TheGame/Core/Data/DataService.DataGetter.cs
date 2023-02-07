@@ -25,7 +25,7 @@ namespace TheGame.Data
                 ICharacterInstanceData data = default;
                 try
                 {
-                    data = _service._characterDataProvider.InstanceData.Get(id);
+                    data = _service._characterDataProvider.InstanceData.GetCharacterInstanceData(id);
                 }
                 catch (Exception ex)
                 {

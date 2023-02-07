@@ -1,4 +1,5 @@
 ﻿using TheGame.Utils;
+using GPrefsUtility;
 
 namespace TheGame.Data
 {
@@ -10,7 +11,7 @@ namespace TheGame.Data
 
     public partial class DataService : IDataService
     {
-        private const int kIdLength = 7;
+
         private readonly CharacterDataProvider _characterDataProvider;
         private readonly IDatabaseProvider _databaseProvider;
 
@@ -30,11 +31,6 @@ namespace TheGame.Data
         private void InitCharactersBaseData()
         {
             _characterDataProvider.BaseData.Init(_databaseProvider.CharactersDatabase);
-        }
-
-        private string CreateCharacterUniqID()
-        {
-            return DataUtils.GetUniqueKey(kIdLength);
         }
     }
 }

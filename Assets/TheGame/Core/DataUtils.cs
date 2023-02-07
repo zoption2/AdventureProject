@@ -68,6 +68,16 @@ namespace TheGame.Utils
             }
         }
 
+        public static string ConvertToSting(object obj)
+        {
+            return JsonConvert.SerializeObject(obj);
+        }
+
+        public static T ConvertFromString<T>(string jsonString)
+        {
+            return JsonConvert.DeserializeObject<T>(jsonString);
+        }
+
         public static async UniTask<string> ConvertToStringAsync(object obj)
         {
             return await UniTask.FromResult(JsonConvert.SerializeObject(obj));
