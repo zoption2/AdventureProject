@@ -1,10 +1,10 @@
 using System.Collections;
 using System.Collections.Generic;
-using UnityEngine;
 using System.Linq;
 using System;
 using Mirror;
 using TheGame.Data;
+using TheGame.Utils;
 
 
 namespace TheGame
@@ -108,7 +108,7 @@ namespace TheGame
     {
         public PlayerType PlayerType;
         //public List<Booster> Boosters;
-        public CharacterData CharacterData;
+        public CharacterInstanceData CharacterData;
     }
 
     [Serializable]
@@ -226,80 +226,28 @@ namespace TheGame
         }
     }
 
-    public class CharacterInstanceDataProvider
-    {
-        private Dictionary<string, CharacterData> _charactersData = new();
-
-        public void AddCharacterStatsData(CharacterData data)
-        {
-            if (!_charactersData.ContainsKey(data.ID))
-            {
-                _charactersData.Add(data.ID, data);
-            }
-        }
-
-        public ICharacterData Get(string id)
-        {
-            if (_charactersData.ContainsKey(id))
-            {
-                return _charactersData[id];
-            }
-            else throw new System.ArgumentNullException(
-                string.Format("There is no instance finded with ID {0}", id));
-        }
-    }
-
-    public class CharacterDataProvider
-    {
-        public CharacterInstanceDataProvider InstanceData { get; } = new();
-        public CharacterBaseDataProvider BaseData { get; } = new();
-    }
-
-    public class CharacterBaseDataProvider
-    {
-        private Dictionary<Character, CharacterBaseData> _charactersData = new();
-
-        public void AddBaseData(CharacterBaseData data)
-        {
-            if (!_charactersData.ContainsKey(data.Character))
-            {
-                _charactersData.Add(data.Character, data);
-            }
-        }
-
-        public CharacterBaseData Get(Character character)
-        {
-            if (_charactersData.ContainsKey(character))
-            {
-                return _charactersData[character];
-            }
-            else throw new System.ArgumentNullException(
-                string.Format("There is no base data exist for character {0}", character));
-        }
-    }
-
-    public interface ICharacterData
+    public interface ICharacterInstanceData
     {
         string Name { get; }
         string ID { get; }
     }
 
     [Serializable]
-    public class CharacterData : ICharacterData
+    public class CharacterInstanceData : ICharacterInstanceData
     {
         private readonly string _id;
-        private readonly CharacterBaseData _base;
+        private readonly ICharacterBaseData _base;
         private string _name = "Noname";
         private Dictionary<StatType, DataStat> _statsData = new();
 
         public string ID => _id;
         public string Name => _name;
-        public CharacterBaseData Base => _base;
+        public ICharacterBaseData Base => _base;
 
         public int TotalSkillPoints;
         public int AvailableSkillPoints;
 
-        public CharacterData(string id, CharacterBaseData baseData)
+        public CharacterInstanceData(string id, ICharacterBaseData baseData)
         {
             _id = id;
             _base = baseData;
@@ -309,7 +257,8 @@ namespace TheGame
         {
             if (!_statsData.ContainsKey(stat))
             {
-                
+                var baseData = _base.GetValue(stat);
+                var statData = new DataStat(stat, baseData);
             }
             return _statsData[stat].TotalValue;
         }
@@ -437,21 +386,6 @@ namespace TheGame
         }
     }    
 
-
-    [Serializable]
-    public struct CharacterBaseData
-    {
-        public Character Character;
-        public float Power;
-        public float Attack;
-        public float Defence;
-        public float Health;
-        public float Mana;
-        public float Speed;
-        public float CritRate;
-        public float CritDamage;
-    }
-
     public enum StatType
     {
         Attack,
@@ -463,8 +397,10 @@ namespace TheGame
         CritDamage
     }
 
-
-    [CreateAssetMenu(fileName = "NewCharacterData")]
+    public class Player
+    {
+        private List<ICharacterInstanceData> _characters;
+    }
 }
     
 

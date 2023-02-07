@@ -6,7 +6,7 @@ namespace TheGame.Data
 
     public interface IDataGetter
     {
-        ICharacterData GetCharacterInstanceData(string id);
+        ICharacterInstanceData GetCharacterInstanceData(string id);
     }
 
     public partial class DataService
@@ -20,12 +20,12 @@ namespace TheGame.Data
                 _service = service;
             }
 
-            public ICharacterData GetCharacterInstanceData(string id)
+            public ICharacterInstanceData GetCharacterInstanceData(string id)
             {
-                ICharacterData data = default;
+                ICharacterInstanceData data = default;
                 try
                 {
-                    data = _service.Character.InstanceData.Get(id);
+                    data = _service._characterDataProvider.InstanceData.Get(id);
                 }
                 catch (Exception ex)
                 {
@@ -35,17 +35,17 @@ namespace TheGame.Data
                 return data;
             }
 
-            public ICharacterData GetNewCharacterInstanceData(Character character)
+            public ICharacterInstanceData GetNewCharacterInstanceData(Character character)
             {
-                var baseData = _service.Character.BaseData.Get(character);
+                var baseData = _service._characterDataProvider.BaseData.Get(character);
                 var instanceData = BuildNewCharacterInstanceDataFromBase(baseData);
                 return instanceData;
             }
 
-            private CharacterData BuildNewCharacterInstanceDataFromBase(CharacterBaseData baseData)
+            private CharacterInstanceData BuildNewCharacterInstanceDataFromBase(ICharacterBaseData baseData)
             {
                 var id = _service.CreateCharacterUniqID();
-                var instanceData = new CharacterData(id, baseData);
+                var instanceData = new CharacterInstanceData(id, baseData);
                 return instanceData;
             }
         }

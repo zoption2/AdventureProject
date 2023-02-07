@@ -4,6 +4,8 @@ using Newtonsoft.Json;
 using System.IO;
 using Cysharp.Threading.Tasks;
 using GPrefsUtility;
+using System;
+using System.Linq;
 
 
 namespace TheGame.Utils
@@ -25,6 +27,12 @@ namespace TheGame.Utils
                 result.Append(chars[b % (chars.Length)]);
             }
             return result.ToString();
+        }
+
+        public static T[] GetEnumValues<T>() where T: Enum
+        {
+            var enums = Enum.GetValues(typeof(T)).Cast<T>().ToArray();
+            return enums;
         }
 
         public static void SaveData<T>(string path, T data)

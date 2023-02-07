@@ -59,19 +59,6 @@ namespace TheGame
             [field: SerializeField] public AssetReferenceGameObject PrefabRef { get; private set; }
         }
     }
-
-    public interface IPrefabsProvider
-    {
-        ICharacterProvider CharacterProvider { get; }
-    }
-
-    [CreateAssetMenu(fileName = "PrefabsProvider", menuName = "ScriptableObjets/PrefabsProvider")]
-    public class PrefabsProvider : ScriptableObject, IPrefabsProvider
-    {
-        [SerializeField] private CharacterProvider _characterProvider;
-
-        public ICharacterProvider CharacterProvider => _characterProvider;
-    }
 }
 
 

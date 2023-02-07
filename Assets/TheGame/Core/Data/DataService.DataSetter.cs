@@ -31,7 +31,8 @@ namespace TheGame.Data
 
     public class UserAccountData
     {
-        public string Data;
+        public string UserName;
+        public string Data = "{}";
     }
 }
     

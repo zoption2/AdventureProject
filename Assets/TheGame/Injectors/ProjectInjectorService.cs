@@ -8,6 +8,7 @@ using TheGame.Data;
 public class ProjectInjectorService : MonoInstaller
 {
     [SerializeField] private PrefabsProvider _prefabsProvider;
+    [SerializeField] private DatabaseProvider _baseDataProvider;
 
     public override void InstallBindings()
     {
@@ -16,5 +17,15 @@ public class ProjectInjectorService : MonoInstaller
         Container.Bind<IPlayerFactory>().To<PlayerFactory>().AsSingle();
         Container.Bind<IMatchService>().To<MatchService>().AsSingle();
         Container.Bind<IPrefabsProvider>().To<PrefabsProvider>().FromInstance(_prefabsProvider).AsSingle();
+        Container.Bind<IDatabaseProvider>().To<DatabaseProvider>().FromInstance(_baseDataProvider).AsSingle();
+
+        BindDataServiceComponents();
+    }
+
+    private void BindDataServiceComponents()
+    {
+        Container.Bind<CharacterDataProvider>().To<CharacterDataProvider>().AsSingle();
+        Container.Bind<CharacterInstanceDataProvider>().To<CharacterInstanceDataProvider>().AsSingle();
+        Container.Bind<CharacterBaseDataProvider>().To<CharacterBaseDataProvider>().AsSingle();
     }
 }
