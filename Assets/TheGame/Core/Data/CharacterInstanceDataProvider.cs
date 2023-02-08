@@ -53,12 +53,6 @@ namespace TheGame.Data
             }
             return id;
         }
-
-        public void SaveInstance(CharacterInstanceData instanceData)
-        {
-            string jsonString = JsonDataService.ConvertToSting(instanceData);
-            GPrefsUtils.SetString(instanceData.ID, jsonString);
-        }
     }
 }
     
