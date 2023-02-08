@@ -2,7 +2,7 @@
 
 namespace TheGame
 {
-    public class StatModifier
+    public class MatchStatModifier
     {
         private float _modifierValue;
         public float ModifierValue => _modifierValue;
@@ -10,7 +10,7 @@ namespace TheGame
 
         public event Action OnStatModifierChanged;
 
-        public StatModifier(float initedValue)
+        public MatchStatModifier(float initedValue)
         {
             _modifierValue = initedValue;
         }

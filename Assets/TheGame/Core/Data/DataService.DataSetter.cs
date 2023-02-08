@@ -5,34 +5,24 @@ namespace TheGame.Data
 {
     public interface IDataSetter
     {
-        void DeployUserData(UserAccountData data);
+        IUserDataSetter User { get; }
+        ICharacterDataSetter Character { get; }
     }
 
     public partial class DataService
     {
         private partial class DataSetter : IDataSetter
         {
+            public IUserDataSetter User => _service._userData;
+            public ICharacterDataSetter Character => _service._characterData;
+
             private DataService _service;
 
             public DataSetter(DataService service)
             {
                 _service = service;
             }
-
-            public async void DeployUserData(UserAccountData data)
-            {
-                var progressTask = JsonDataService.ConvertFromStringAsync<JSONNode>(data.Data);
-                await progressTask;
-                JSONNode progress = progressTask.GetAwaiter().GetResult();
-                GPrefsUtils.LoadFile(progress);
-            }
         }
-    }
-
-    public class UserAccountData
-    {
-        public string UserName;
-        public string Data = "{}";
     }
 }
     

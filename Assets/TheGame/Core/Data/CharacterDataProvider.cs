@@ -2,38 +2,20 @@
 
 namespace TheGame.Data
 {
-    public interface IDataUtils
+    public interface ICharacterDataGetter
     {
-
+        ICharacterInstanceData CreateNewInstanceData(Character character);
+        ICharacterInstanceData[] GetAllInstancesData();
+        ICharacterInstanceData GetInstanceData(string id);
     }
 
-    public abstract class BaseProvider<T> where T: IDataUtils, new()
+    public interface ICharacterDataSetter
     {
-        protected T Utils { get; private set; }
-
-        public BaseProvider()
-        {
-            Utils = new T();
-        }
+        void AddDataStatModifierToInstance(string instanceID, DataStatModifier modifier, string reason = null);
+        void RemoveStatModifierFromInstance(string instanceID, StatType stat, TripleKey key, string reason = null);
     }
 
-    public class CharacterDataUtils : IDataUtils
-    {
-        public void SaveInstanceData(CharacterInstanceData instanceData)
-        {
-            string jsonString = JsonDataService.ConvertToSting(instanceData);
-            GPrefsUtils.SetString(instanceData.ID, jsonString);
-        }
-
-        public CharacterInstanceData LoadInstanceData(string id)
-        {
-            string jsonString = GPrefsUtils.GetString(id);
-            var data = JsonDataService.ConvertFromString<CharacterInstanceData>(jsonString);
-            return data;
-        }
-    }
-
-    public class CharacterDataProvider : BaseProvider<CharacterDataUtils>
+    public class CharacterDataProvider : BaseProvider<CharacterDataUtils>, ICharacterDataGetter, ICharacterDataSetter
     {
         private readonly CharacterInstanceDataProvider _instanceData;
         private readonly CharacterBaseDataProvider _baseData;
@@ -48,7 +30,7 @@ namespace TheGame.Data
             _baseData = baseDataProvider;
         }
 
-        public ICharacterInstanceData CreateNewCharacterInstanceData(Character character)
+        public ICharacterInstanceData CreateNewInstanceData(Character character)
         {
             var baseData = _baseData.Get(character);
             var id = _instanceData.CreateCharacterUniqID();
@@ -56,6 +38,46 @@ namespace TheGame.Data
             _instanceData.AddCharacterInstanceData(instance);
             Utils.SaveInstanceData(instance);
             return instance;
+        }
+
+        public ICharacterInstanceData GetInstanceData(string id)
+        {
+            return _instanceData.GetCharacterInstanceData(id);
+        }
+
+        public ICharacterInstanceData[] GetAllInstancesData()
+        {
+            return _instanceData.GetAllInstancesDatas();
+        }
+
+        public void AddDataStatModifierToInstance(string instanceID, DataStatModifier modifier, string reason = null)
+        {
+            var instance = _instanceData.GetCharacterInstanceData(instanceID);
+            instance.AddStatModifier(modifier);
+            Utils.SaveInstanceData(instance);
+        }
+
+        public void RemoveStatModifierFromInstance(string instanceID, StatType stat, TripleKey key, string reason = null)
+        {
+            var instance = _instanceData.GetCharacterInstanceData(instanceID);
+            instance.RemoveStatModifier(stat, key);
+            Utils.SaveInstanceData(instance);
+        }
+    }
+
+    public class CharacterDataUtils : BaseDataUtility
+    {
+        public void SaveInstanceData(CharacterInstanceData instanceData)
+        {
+            string jsonString = JsonUtility.ConvertToSting(instanceData);
+            GPrefsUtility.SetString(instanceData.ID, jsonString);
+        }
+
+        public CharacterInstanceData LoadInstanceData(string id)
+        {
+            string jsonString = GPrefsUtility.GetString(id);
+            var data = JsonUtility.ConvertFromString<CharacterInstanceData>(jsonString);
+            return data;
         }
     }
 }

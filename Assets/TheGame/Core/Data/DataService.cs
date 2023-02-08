@@ -1,7 +1,4 @@
-﻿using TheGame.Utils;
-using GPrefsUtility;
-
-namespace TheGame.Data
+﻿namespace TheGame.Data
 {
     public interface IDataService
     {
@@ -9,19 +6,23 @@ namespace TheGame.Data
         IDataSetter Setter { get; }
     }
 
+
+
     public partial class DataService : IDataService
     {
-
-        private readonly CharacterDataProvider _characterDataProvider;
+        private readonly UserDataProvider _userData;
+        private readonly CharacterDataProvider _characterData;
         private readonly IDatabaseProvider _databaseProvider;
 
         public IDataGetter Getter { get; }
         public IDataSetter Setter { get; }
 
-        public DataService(CharacterDataProvider characterDataProvider
+        public DataService(UserDataProvider userDataProvider
+            , CharacterDataProvider characterDataProvider
             , IDatabaseProvider databaseProvider)
         {
-            _characterDataProvider = characterDataProvider;
+            _userData = userDataProvider;
+            _characterData = characterDataProvider;
             _databaseProvider = databaseProvider;
 
             Getter = new DataGetter(this);
@@ -30,7 +31,7 @@ namespace TheGame.Data
 
         private void InitCharactersBaseData()
         {
-            _characterDataProvider.BaseData.Init(_databaseProvider.CharactersDatabase);
+            _characterData.BaseData.Init(_databaseProvider.CharactersDatabase);
         }
     }
 }

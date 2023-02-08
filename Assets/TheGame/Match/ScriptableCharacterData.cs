@@ -44,7 +44,7 @@ namespace TheGame.Data
         {
             if (Stats.Length == 0)
             {
-                var enums = DataUtils.GetEnumValues<StatType>();
+                var enums = SupportUtility.GetEnumValues<StatType>();
                 var newStats = new Stat[enums.Length];
 
                 for (int i = 0, j = enums.Length;  i < j; i++)

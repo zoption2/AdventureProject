@@ -16,7 +16,7 @@ namespace TheGame
         private float _originValue;
         private float _maxValue = float.MaxValue;
         private float _minValue = 0f;
-        private List<StatModifier> _modifiers = new();
+        private List<MatchStatModifier> _modifiers = new();
         private List<IStatWatcher> _watchers = new();
 
         public float Value => _value;
@@ -64,14 +64,14 @@ namespace TheGame
             }
         }
 
-        public void AddModifier(StatModifier modifier)
+        public void AddModifier(MatchStatModifier modifier)
         {
             _modifiers.Add(modifier);
             UpdateCurrentValue();
             modifier.OnStatModifierChanged += UpdateCurrentValue;
         }
 
-        public void RemoveModifier(StatModifier modifier)
+        public void RemoveModifier(MatchStatModifier modifier)
         {
             if (_modifiers.Contains(modifier))
             {

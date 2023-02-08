@@ -176,7 +176,7 @@ namespace TheGame
 
         private string GetRandomMatchID()
         {
-            return DataUtils.GetUniqueKey(kIdLength);
+            return SupportUtility.GetUniqueKey(kIdLength);
         }
     }
 
@@ -269,6 +269,14 @@ namespace TheGame
             if (_statsData.ContainsKey(stat))
             {
                 _statsData[stat].AddModifier(modifier);
+            }
+        }
+
+        public void RemoveStatModifier(StatType stat, TripleKey key)
+        {
+            if (_statsData.ContainsKey(stat))
+            {
+                _statsData[stat].RemoveModifier(key);
             }
         }
 

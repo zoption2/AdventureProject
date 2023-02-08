@@ -2,7 +2,7 @@
 using System.IO;
 using UnityEngine;
 
-namespace GPrefsUtility
+namespace Utility
 {
     public static class GPrefs
     {
@@ -10,6 +10,12 @@ namespace GPrefsUtility
         public static JSONNode allGameData = null;
 
         public static string dataPath = Application.persistentDataPath + "/userData";
+        private static string _baseDataPath = Application.persistentDataPath + "/userData";
+
+        public static void UpdateDataPath(string finalPath)
+        {
+            dataPath = Path.Combine(_baseDataPath, finalPath);
+        }
 
         #region Delete
 

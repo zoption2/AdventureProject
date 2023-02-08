@@ -3,14 +3,14 @@ using System.Text;
 using Newtonsoft.Json;
 using System.IO;
 using Cysharp.Threading.Tasks;
-using GPrefsUtility;
+using Utility;
 using System;
 using System.Linq;
 
 
 namespace TheGame.Utils
 {
-    public class DataUtils
+    public class SupportUtility
     {
         public static string GetUniqueKey(int size)
         {
@@ -34,19 +34,22 @@ namespace TheGame.Utils
             var enums = Enum.GetValues(typeof(T)).Cast<T>().ToArray();
             return enums;
         }
+    }
 
+    public static class DataUtility
+    {
         public static void SaveData<T>(string path, T data)
         {
-            JsonDataService.SaveData(path, data);
+            JsonUtility.SaveData(path, data);
         }
 
         public static T LoadData<T>(string path)
         {
-            return JsonDataService.LoadData<T>(path);
+            return JsonUtility.LoadData<T>(path);
         }
     }
 
-    public static class JsonDataService
+    public static class JsonUtility
     {
         public static void SaveData<T>(string fileName, T data)
         {
@@ -85,11 +88,12 @@ namespace TheGame.Utils
 
         public static async UniTask<T> ConvertFromStringAsync<T>(string jsonString)
         {
-            return await UniTask.FromResult(JsonConvert.DeserializeObject<T>(jsonString));
+            var task = await UniTask.FromResult(JsonConvert.DeserializeObject<T>(jsonString));
+            return task;
         }
     }
 
-    public class GPrefsUtils
+    public class GPrefsUtility
     {
         public static void SetInt(string key, int value)
         {
@@ -129,6 +133,11 @@ namespace TheGame.Utils
         public static void LoadFile(SimpleJSON.JSONNode data)
         {
             GPrefs.LoadExternal(data);
+        }
+
+        public static void UpdatePath(string finalPart)
+        {
+            GPrefs.UpdateDataPath(finalPart);
         }
     }
 }

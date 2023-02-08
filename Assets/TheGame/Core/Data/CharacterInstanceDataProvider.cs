@@ -45,7 +45,7 @@ namespace TheGame.Data
             bool isIdAvailable = false;
             while (!isIdAvailable)
             {
-                id = DataUtils.GetUniqueKey(kIdLength);
+                id = SupportUtility.GetUniqueKey(kIdLength);
                 if (!_charactersData.ContainsKey(id))
                 {
                     isIdAvailable = true;
