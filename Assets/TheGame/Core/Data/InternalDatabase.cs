@@ -2,13 +2,13 @@
 
 namespace TheGame.Data
 {
-    public interface IDatabaseProvider
+    public interface IDatabase
     {
         ICharactersDatabase CharactersDatabase { get; }
     }
 
     [CreateAssetMenu(fileName = "BaseDataProvider", menuName = "ScriptableObjets/BaseDataProvider")]
-    public class DatabaseProvider : ScriptableObject, IDatabaseProvider
+    public class InternalDatabase : ScriptableObject, IDatabase
     {
         [SerializeField] private CharactersDatabase _charactersDatabase;
 

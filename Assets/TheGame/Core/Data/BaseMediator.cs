@@ -1,4 +1,5 @@
 ﻿using TheGame.Utils;
+using Cysharp.Threading.Tasks;
 
 namespace TheGame.Data
 {
@@ -24,13 +25,18 @@ namespace TheGame.Data
         }
     }
 
-    public abstract class BaseProvider<T> where T: IDataUtils, new()
+    public abstract class BaseMediator<T> where T: IDataUtils, new()
     {
         protected T Utils { get; private set; }
 
-        public BaseProvider()
+        public BaseMediator()
         {
             Utils = new T();
+        }
+
+        public virtual async UniTask Initialize()
+        {
+            await UniTask.Delay(50);
         }
     }
 }

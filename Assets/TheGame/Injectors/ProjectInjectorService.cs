@@ -9,7 +9,7 @@ using TheGame.Massager;
 public class ProjectInjectorService : MonoInstaller
 {
     [SerializeField] private PrefabsProvider _prefabsProvider;
-    [SerializeField] private DatabaseProvider _baseDataProvider;
+    [SerializeField] private InternalDatabase _baseDataProvider;
 
     public override void InstallBindings()
     {
@@ -20,18 +20,16 @@ public class ProjectInjectorService : MonoInstaller
         Container.Bind<IMassageService>().To<MassagesService>().AsSingle();
 
         Container.Bind<IPrefabsProvider>().To<PrefabsProvider>().FromInstance(_prefabsProvider).AsSingle();
-        Container.Bind<IDatabaseProvider>().To<DatabaseProvider>().FromInstance(_baseDataProvider).AsSingle();
+        Container.Bind<IDatabase>().To<InternalDatabase>().FromInstance(_baseDataProvider).AsSingle();
 
         BindDataServiceComponents();
     }
 
     private void BindDataServiceComponents()
     {
-        Container.Bind<CharacterDataProvider>().To<CharacterDataProvider>().AsSingle();
+        Container.Bind<CharacterDataMediator>().To<CharacterDataMediator>().AsSingle();
 
-        Container.Bind<UserDataProvider>().To<UserDataProvider>().AsSingle();
+        Container.Bind<UserDataMediator>().To<UserDataMediator>().AsSingle();
 
-        Container.Bind<CharacterInstanceDataProvider>().To<CharacterInstanceDataProvider>().AsSingle();
-        Container.Bind<CharacterBaseDataProvider>().To<CharacterBaseDataProvider>().AsSingle();
     }
 }

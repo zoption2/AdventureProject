@@ -1,4 +1,5 @@
-﻿using TheGame.Utils;
+﻿using Cysharp.Threading.Tasks;
+using TheGame.Utils;
 
 namespace TheGame.Data
 {
@@ -15,19 +16,30 @@ namespace TheGame.Data
         void RemoveStatModifierFromInstance(string instanceID, StatType stat, TripleKey key, string reason = null);
     }
 
-    public class CharacterDataProvider : BaseProvider<CharacterDataUtils>, ICharacterDataGetter, ICharacterDataSetter
+    public sealed class CharacterDataMediator : BaseMediator<CharacterDataUtils>, ICharacterDataGetter, ICharacterDataSetter
     {
+        private const string kInstancesKeys = "characters_instances_keys";
+        private readonly IDatabase _database;
         private readonly CharacterInstanceDataProvider _instanceData;
         private readonly CharacterBaseDataProvider _baseData;
 
-        public CharacterInstanceDataProvider InstanceData => _instanceData;
-        public CharacterBaseDataProvider BaseData => _baseData;
-
-        public CharacterDataProvider(CharacterInstanceDataProvider instanceDataProvider
-            ,CharacterBaseDataProvider baseDataProvider) : base()
+        public CharacterDataMediator(IDatabase database) : base()
         {
-            _instanceData = instanceDataProvider;
-            _baseData = baseDataProvider;
+            _database = database;
+            _instanceData = new CharacterInstanceDataProvider();
+            _baseData = new CharacterBaseDataProvider();
+        }
+
+        public override async UniTask Initialize()
+        {
+            await base.Initialize();
+            _baseData.Init(_database.CharactersDatabase);
+            string[] instanceIDs = Utils.Parse<string[]>(kInstancesKeys);
+            for (int i = 0, j = instanceIDs.Length; i < j; i++)
+            {
+                var instance = Utils.Parse<CharacterInstanceData>(instanceIDs[i]);
+                _instanceData.AddCharacterInstanceData(instance);
+            }
         }
 
         public ICharacterInstanceData CreateNewInstanceData(Character character)
@@ -78,6 +90,22 @@ namespace TheGame.Data
             string jsonString = GPrefs.GetString(id);
             var data = JsonUtility.FromJson<CharacterInstanceData>(jsonString);
             return data;
+        }
+
+        public T Parse<T> (string key)
+        {
+            try
+            {
+                string json = GPrefs.GetString(key);
+                var result = JsonUtility.FromJson<T>(json);
+                return result;
+            }
+            catch (System.Exception ex)
+            {
+                UnityEngine.Debug.LogFormat("Parsed {0} with {1} key can't be parsed", typeof(T), key);
+                return default;
+            }
+
         }
     }
 }

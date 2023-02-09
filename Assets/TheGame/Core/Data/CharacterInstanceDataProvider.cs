@@ -8,6 +8,8 @@ namespace TheGame.Data
         private const int kIdLength = 7;
         private Dictionary<string, CharacterInstanceData> _charactersData = new();
 
+        public Dictionary<string, CharacterInstanceData>.KeyCollection InstancesIDs => _charactersData.Keys; 
+
         public void AddCharacterInstanceData(CharacterInstanceData data)
         {
             if (!_charactersData.ContainsKey(data.ID))

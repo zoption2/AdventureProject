@@ -15,14 +15,6 @@ namespace TheGame.Data
             }
         }
 
-        public void AddBaseData(ICharacterBaseData data)
-        {
-            if (!_charactersData.ContainsKey(data.Character))
-            {
-                _charactersData.Add(data.Character, data);
-            }
-        }
-
         public ICharacterBaseData Get(Character character)
         {
             if (_charactersData.ContainsKey(character))
@@ -31,6 +23,14 @@ namespace TheGame.Data
             }
             else throw new System.ArgumentNullException(
                 string.Format("There is no base data exist for character {0}", character));
+        }
+
+        private void AddBaseData(ICharacterBaseData data)
+        {
+            if (!_charactersData.ContainsKey(data.Character))
+            {
+                _charactersData.Add(data.Character, data);
+            }
         }
     }
 }

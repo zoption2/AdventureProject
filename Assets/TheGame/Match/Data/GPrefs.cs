@@ -209,7 +209,7 @@ namespace TheGame.Utils
         }
         #endregion
 
-        public static void DeleteFile(string name)
+        public static void DeleteFileByName(string name)
         {
             var path = Path.Combine(_baseDataPath, name);
             if (File.Exists(path))
@@ -218,7 +218,7 @@ namespace TheGame.Utils
             }
         }
 
-        public static void RefreshData()
+        public static void ClearGameData()
         {
             allGameData = JSONClass.Parse("{}");
         }
