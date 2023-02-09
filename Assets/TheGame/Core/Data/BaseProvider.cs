@@ -20,7 +20,7 @@ namespace TheGame.Data
 
         public virtual void Save()
         {
-            GPrefsUtility.Save();
+            GPrefs.Save();
         }
     }
 

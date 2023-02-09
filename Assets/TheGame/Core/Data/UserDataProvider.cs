@@ -8,12 +8,17 @@ namespace TheGame.Data
 {
     public interface IUserDataGetter
     {
-
+        string GetUserId();
+        string GetUserName();
+        string GetUserAccountDataJson();
     }
 
     public interface IUserDataSetter
     {
-
+        void SetUserName(string name);
+        UniTask LoadUserData(string jsonString, Action onComplete = null, Action onFail = null);
+        void CreateNewUserData();
+        void ClearUserAccountData();
     }
 
     public class UserDataProvider : BaseProvider<UserDataUtils>, IUserDataGetter, IUserDataSetter
@@ -26,7 +31,7 @@ namespace TheGame.Data
             _massageService = massageService;
         }
 
-        public async UniTask LoadUserData(string jsonString, Action onComplete, Action onFail)
+        public async UniTask LoadUserData(string jsonString, Action onComplete = null, Action onFail = null)
         {
             _userData = Utils.TryGetUserDataFromJson(jsonString);
             if (_userData == null)
@@ -44,14 +49,64 @@ namespace TheGame.Data
         {
             var userID = Utils.GetUniqueID();
             var userData = new UserAccountData(userID);
+            userData.UserName = "Player" + userData.ID;
+            _userData = userData;
             Utils.UpdateFilePath(userData.ID);
             Utils.Save();
         }
 
+        public string GetUserAccountDataJson()
+        {
+            Utils.Save();
+            _userData.Data = Utils.GetData();
+            var jsonUserData = Utils.ConvertUserDataToJson(_userData);
+            return jsonUserData;
+        }
+
+        public void ClearUserAccountData()
+        {
+            Utils.ClearUserAccountData();
+            Utils.Save();
+            _userData.Data = Utils.GetData();
+        }
+
+        public string GetUserName()
+        {
+            if (_userData != null)
+            {
+                return _userData.UserName;
+            }
+            throw new System.NullReferenceException(
+                string.Format("User data is not setted. Load User data first instead of create new one")
+                );
+        }
+
+        public void SetUserName(string name)
+        {
+            if (_userData != null)
+            {
+                _userData.UserName = name;
+            }
+            throw new System.NullReferenceException(
+                string.Format("User data is not setted. Load User data first instead of create new one")
+                );
+        }
+
+        public string GetUserId()
+        {
+            if (_userData != null)
+            {
+                return _userData.ID;
+            }
+            throw new System.NullReferenceException(
+                string.Format("User data is not setted. Load User data first instead of create new one")
+                );
+            
+        }
+
         private async UniTask DeployUserData(UserAccountData data)
         {
-            var progress = await Utils.GetNodeFromJson(data.Data);
-            Utils.LoadData(progress);
+            await Utils.LoadDataAsync(data.Data);
             Utils.UpdateFilePath(data.ID);
             Utils.Save();
         }
@@ -59,38 +114,52 @@ namespace TheGame.Data
 
     public class UserDataUtils : BaseDataUtility
     {
-        public void LoadData(JSONNode data)
+        public void LoadData(byte[] data)
         {
-            GPrefsUtility.LoadFile(data);
+            GPrefs.Load(data);
+        }
+
+        public async UniTask LoadDataAsync(byte[] data)
+        {
+            await GPrefs.LoadAsync(data);
+        }
+
+        public byte[] GetData()
+        {
+            return GPrefs.GetDataInByte();
         }
 
         public void UpdateFilePath(string path)
         {
-            GPrefsUtility.UpdatePath(path);
-        }
-
-        public async UniTask<JSONNode> GetNodeFromJson(string jsonString)
-        {
-            var result = await JsonUtility.ConvertFromStringAsync<JSONNode>(jsonString);
-            return result;
-        }
-
-        public UserAccountData GetUserDataFromJson(string json)
-        {
-            return JsonUtility.ConvertFromString<UserAccountData>(json);
+            GPrefs.UpdateDataPath(path);
         }
 
         public UserAccountData TryGetUserDataFromJson(string json)
         {
             try
             {
-                return JsonUtility.ConvertFromString<UserAccountData>(json);
+                return JsonUtility.FromJson<UserAccountData>(json);
             }
             catch (System.Exception)
             {
                 return null;
                 throw;
             }
+        }
+
+        public string ConvertUserDataToJson(UserAccountData data)
+        {
+            return JsonUtility.ToJson(data);
+        }
+
+        public void ClearUserAccountData()
+        {
+            GPrefs.RefreshData();
+        }
+
+        public void DeleteUserDataFile(string name)
+        {
+            GPrefs.DeleteFile(name);
         }
     }
 
@@ -99,7 +168,7 @@ namespace TheGame.Data
     {
         public string UserName;
         public readonly string ID;
-        public string Data = "{}";
+        public byte[] Data;
 
         public UserAccountData(string id)
         {

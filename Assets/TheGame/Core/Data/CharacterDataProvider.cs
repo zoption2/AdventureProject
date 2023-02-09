@@ -69,14 +69,14 @@ namespace TheGame.Data
     {
         public void SaveInstanceData(CharacterInstanceData instanceData)
         {
-            string jsonString = JsonUtility.ConvertToSting(instanceData);
-            GPrefsUtility.SetString(instanceData.ID, jsonString);
+            string jsonString = JsonUtility.ToJson(instanceData);
+            GPrefs.SetString(instanceData.ID, jsonString);
         }
 
         public CharacterInstanceData LoadInstanceData(string id)
         {
-            string jsonString = GPrefsUtility.GetString(id);
-            var data = JsonUtility.ConvertFromString<CharacterInstanceData>(jsonString);
+            string jsonString = GPrefs.GetString(id);
+            var data = JsonUtility.FromJson<CharacterInstanceData>(jsonString);
             return data;
         }
     }

@@ -2,7 +2,7 @@
 using System.IO;
 using UnityEngine;
 
-namespace Utility
+namespace TheGame.Utils
 {
     public static class GPrefs
     {
@@ -12,9 +12,9 @@ namespace Utility
         public static string dataPath = Application.persistentDataPath + "/userData";
         private static string _baseDataPath = Application.persistentDataPath + "/userData";
 
-        public static void UpdateDataPath(string finalPath)
+        public static void UpdateDataPath(string name)
         {
-            dataPath = Path.Combine(_baseDataPath, finalPath);
+            dataPath = Path.Combine(_baseDataPath, name);
         }
 
         #region Delete
@@ -178,9 +178,16 @@ namespace Utility
             // Debug.LogError(allGameData.ToString());
         }
 
-        public static void LoadExternal(JSONNode data)
+        public static async Cysharp.Threading.Tasks.UniTask LoadAsync(byte[] data = null)
         {
-            allGameData = data;
+            if (data != null)
+            {
+                await File.WriteAllBytesAsync(dataPath, data);
+            }
+            if (File.Exists(dataPath))
+                allGameData = JSONNode.LoadFromFile(dataPath);
+            else
+                allGameData = JSONClass.Parse("{}");
         }
 
         #endregion
@@ -194,8 +201,27 @@ namespace Utility
             return temp;
         }
 
+        public static async Cysharp.Threading.Tasks.UniTask<byte[]> GetDataInByteAsync()
+        {
+            Save();
+            byte[] temp = await File.ReadAllBytesAsync(dataPath);
+            return temp;
+        }
         #endregion
 
+        public static void DeleteFile(string name)
+        {
+            var path = Path.Combine(_baseDataPath, name);
+            if (File.Exists(path))
+            {
+                File.Delete(path);
+            }
+        }
+
+        public static void RefreshData()
+        {
+            allGameData = JSONClass.Parse("{}");
+        }
     }
 }
 

@@ -3,7 +3,6 @@ using System.Text;
 using Newtonsoft.Json;
 using System.IO;
 using Cysharp.Threading.Tasks;
-using Utility;
 using System;
 using System.Linq;
 
@@ -71,22 +70,22 @@ namespace TheGame.Utils
             }
         }
 
-        public static string ConvertToSting(object obj)
+        public static string ToJson(object obj)
         {
             return JsonConvert.SerializeObject(obj);
         }
 
-        public static T ConvertFromString<T>(string jsonString)
+        public static T FromJson<T>(string jsonString)
         {
             return JsonConvert.DeserializeObject<T>(jsonString);
         }
 
-        public static async UniTask<string> ConvertToStringAsync(object obj)
+        public static async UniTask<string> ToJsonAsync(object obj)
         {
             return await UniTask.FromResult(JsonConvert.SerializeObject(obj));
         }
 
-        public static async UniTask<T> ConvertFromStringAsync<T>(string jsonString)
+        public static async UniTask<T> FromJsonAsync<T>(string jsonString)
         {
             var task = await UniTask.FromResult(JsonConvert.DeserializeObject<T>(jsonString));
             return task;
@@ -133,6 +132,16 @@ namespace TheGame.Utils
         public static void LoadFile(SimpleJSON.JSONNode data)
         {
             GPrefs.LoadExternal(data);
+        }
+
+        public static void LoadData(byte[] data)
+        {
+            GPrefs.Load(data);
+        }
+
+        public static byte[] GetData()
+        {
+            return GPrefs.GetDataInByte();
         }
 
         public static void UpdatePath(string finalPart)
