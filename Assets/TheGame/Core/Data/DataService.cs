@@ -10,16 +10,16 @@
 
     public partial class DataService : IDataService
     {
-        private readonly UserDataProvider _userData;
-        private readonly CharacterDataProvider _characterData;
-        private readonly IDatabaseProvider _databaseProvider;
+        private readonly UserDataMediator _userData;
+        private readonly CharacterDataMediator _characterData;
+        private readonly IDatabase _databaseProvider;
 
         public IDataGetter Getter { get; }
         public IDataSetter Setter { get; }
 
-        public DataService(UserDataProvider userDataProvider
-            , CharacterDataProvider characterDataProvider
-            , IDatabaseProvider databaseProvider)
+        public DataService(UserDataMediator userDataProvider
+            , CharacterDataMediator characterDataProvider
+            , IDatabase databaseProvider)
         {
             _userData = userDataProvider;
             _characterData = characterDataProvider;
@@ -27,6 +27,21 @@
 
             Getter = new DataGetter(this);
             Setter = new DataSetter(this);
+        }
+
+        public async Cysharp.Threading.Tasks.UniTask Initialize(string userAccountData = "NewPlayer")
+        {
+            await _userData.LoadUserData(userAccountData, OnSuccess, OnFail);
+
+            async void OnSuccess()
+            {
+
+            }
+
+            void OnFail()
+            {
+
+            }
         }
 
         private void InitCharactersBaseData()

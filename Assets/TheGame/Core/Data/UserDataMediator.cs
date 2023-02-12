@@ -21,7 +21,7 @@ namespace TheGame.Data
         void ClearUserAccountData();
     }
 
-    public class UserDataMediator : BaseProvider<UserDataUtils>, IUserDataGetter, IUserDataSetter
+    public class UserDataMediator : BaseMediator<UserDataUtils>, IUserDataGetter, IUserDataSetter
     {
         private IMassageService _massageService;
         private UserAccountData _userData;
